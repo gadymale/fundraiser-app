@@ -1,117 +1,70 @@
-// src/Admin.jsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import * as XLSX from "xlsx";
-import { db } from "./firebase";
-import { collection, addDoc, getDocs, updateDoc, doc } from "firebase/firestore";
 
 export default function Admin() {
-  const [donors, setDonors] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [contactFilter, setContactFilter] = useState("all");
-  const [likelihoodFilter, setLikelihoodFilter] = useState("all");
+  const [data, setData] = useState([]);
 
-  // Load donors from Firebase
-  useEffect(() => {
-    loadDonors();
-  }, []);
-
-  const loadDonors = async () => {
-    const snapshot = await getDocs(collection(db, "donors"));
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setDonors(data);
-    setFiltered(data);
-  };
-
-  const getLikelihood = (amount) => {
-    if (amount > 500) return "high";
-    if (amount > 100) return "medium";
-    return "low";
-  };
-
-  // Upload Excel
-  const uploadFile = async (e) => {
+  const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    const data = await file.arrayBuffer();
-    const workbook = XLSX.read(data);
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const json = XLSX.utils.sheet_to_json(sheet);
+    const reader = new FileReader();
 
-    for (let row of json) {
-      const prev = Number(row.PreviousDonation || 0);
-      const hasContact = !!(row.Phone || row.Email);
-      await addDoc(collection(db, "donors"), {
-        name: row.Name || "",
-        phone: row.Phone || "",
-        email: row.Email || "",
-        previousDonation: prev,
-        likelihood: getLikelihood(prev),
-        hasContact,
-        assignedTo: "",
-        status: "pending"
-      });
-    }
+    reader.onload = (evt) => {
+      const binaryStr = evt.target.result;
+      const workbook = XLSX.read(binaryStr, { type: "binary" });
 
-    alert("Upload complete");
-    loadDonors();
-  };
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
 
-  // Apply filters
-  const applyFilters = () => {
-    let temp = [...donors];
-    if (contactFilter !== "all") {
-      temp = temp.filter(d => d.hasContact === (contactFilter === "yes"));
-    }
-    if (likelihoodFilter !== "all") {
-      temp = temp.filter(d => d.likelihood === likelihoodFilter);
-    }
-    setFiltered(temp);
-  };
+      const jsonData = XLSX.utils.sheet_to_json(sheet);
+      setData(jsonData);
+    };
 
-  // Assign donors to volunteers
-  const assignDonors = async () => {
-    const volunteers = ["vol1@example.com", "vol2@example.com"];
-    for (let i = 0; i < filtered.length; i++) {
-      await updateDoc(doc(db, "donors", filtered[i].id), {
-        assignedTo: volunteers[i % volunteers.length]
-      });
-    }
-    alert("Assigned!");
-    loadDonors();
+    reader.readAsBinaryString(file);
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Admin Dashboard</h1>
+    <div>
+      <h2>Admin Dashboard</h2>
 
-      <h3>Upload Excel</h3>
-      <input type="file" onChange={uploadFile} />
+      <input type="file" onChange={handleFileUpload} />
 
-      <h3>Filters</h3>
-      <select onChange={e => setContactFilter(e.target.value)}>
-        <option value="all">All</option>
-        <option value="yes">Has Contact</option>
-        <option value="no">No Contact</option>
-      </select>
+      {data.length > 0 && (
+        <table border="1" style={{ marginTop: 20 }}>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Primary City</th>
+              <th>Primary State</th>
+              <th>Primary Phone Number</th>
+              <th>FY 22-23</th>
+              <th>FY 23-24</th>
+              <th>FY 24-25</th>
+              <th>FY 25-26</th>
+              <th>Groups</th>
+              <th>Household Name</th>
+              <th>Account Number</th>
+            </tr>
+          </thead>
 
-      <select onChange={e => setLikelihoodFilter(e.target.value)}>
-        <option value="all">All</option>
-        <option value="high">High</option>
-        <option value="medium">Medium</option>
-        <option value="low">Low</option>
-      </select>
-
-      <button onClick={applyFilters}>Apply Filters</button>
-      <button onClick={assignDonors}>Assign Donors</button>
-
-      <h3>Donors ({filtered.length})</h3>
-      {filtered.map(d => (
-        <div key={d.id} style={{ border: "1px solid gray", margin: 10, padding: 10 }}>
-          <b>{d.name}</b><br />
-          Likelihood: {d.likelihood}<br />
-          Contact: {d.hasContact ? "Yes" : "No"}<br />
-          Assigned: {d.assignedTo || "Not assigned"}
-        </div>
-      ))}
+          <tbody>
+            {data.map((row, index) => (
+              <tr key={index}>
+                <td>{row["Name"]}</td>
+                <td>{row["Primary City"]}</td>
+                <td>{row["Primary State"]}</td>
+                <td>{row["Primary Phone Number"]}</td>
+                <td>{row["FY 22-23"]}</td>
+                <td>{row["FY 23-24"]}</td>
+                <td>{row["FY 24-25"]}</td>
+                <td>{row["FY 25-26"]}</td>
+                <td>{row["Groups"]}</td>
+                <td>{row["Household Name"]}</td>
+                <td>{row["Account Number"]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

@@ -108,7 +108,7 @@ export default function Admin() {
         />
       </div>
 
-      {/* Firebase Donors Table */}
+      {/* Donors Table */}
       <div className="table-container">
         <table className="admin-table">
           <thead>
@@ -129,7 +129,11 @@ export default function Admin() {
                 <td>{d.primaryCity}</td>
                 <td>{d.primaryState}</td>
                 <td>{d.phone}</td>
-                <td>{d.status}</td>
+                <td>
+                  <span className={`status-badge ${d.status.toLowerCase()}`}>
+                    {d.status.charAt(0).toUpperCase() + d.status.slice(1)}
+                  </span>
+                </td>
                 <td>{d.assignedTo}</td>
                 <td>
                   <input

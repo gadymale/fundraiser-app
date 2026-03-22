@@ -7,7 +7,7 @@
   overflow-x: auto;
 }
 
-/* Table Header */
+/* Table */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -45,3 +45,22 @@
   outline: none;
   box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
 }
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  color: white;
+  text-transform: capitalize;
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.status-badge.pending { background-color: #FF9800; }
+.status-badge.contacted { background-color: #2196F3; }
+.status-badge.donated { background-color: #4CAF50; }
+
+.status-badge:hover { transform: scale(1.05); }

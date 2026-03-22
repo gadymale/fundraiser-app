@@ -17,7 +17,7 @@ export default function Admin() {
     return () => unsubscribe();
   }, []);
 
-  // Upload Excel file and parse
+  // Upload Excel file
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -33,7 +33,7 @@ export default function Admin() {
     reader.readAsBinaryString(file);
   };
 
-  // Upload Excel data to Firebase
+  // Upload Excel to Firebase
   const uploadToFirebase = async () => {
     for (const row of data) {
       const donor = {
@@ -58,12 +58,12 @@ export default function Admin() {
     await updateDoc(doc(db, "donors", id), { assignedTo: volunteer });
   };
 
-  // Filter donors
+  // Safe filtered donors
   const filteredDonors = donors.filter((d) =>
-    d.name.toLowerCase().includes(filters.name.toLowerCase()) &&
-    d.primaryCity.toLowerCase().includes(filters.city.toLowerCase()) &&
-    d.primaryState.toLowerCase().includes(filters.state.toLowerCase()) &&
-    d.assignedTo.toLowerCase().includes(filters.assignedTo.toLowerCase())
+    (d.name || "").toLowerCase().includes(filters.name.toLowerCase()) &&
+    (d.primaryCity || "").toLowerCase().includes(filters.city.toLowerCase()) &&
+    (d.primaryState || "").toLowerCase().includes(filters.state.toLowerCase()) &&
+    (d.assignedTo || "").toLowerCase().includes(filters.assignedTo.toLowerCase())
   );
 
   return (
@@ -125,16 +125,16 @@ export default function Admin() {
           <tbody>
             {filteredDonors.map((d) => (
               <tr key={d.id}>
-                <td>{d.name}</td>
-                <td>{d.primaryCity}</td>
-                <td>{d.primaryState}</td>
-                <td>{d.phone}</td>
+                <td>{d.name || ""}</td>
+                <td>{d.primaryCity || ""}</td>
+                <td>{d.primaryState || ""}</td>
+                <td>{d.phone || ""}</td>
                 <td>
-                  <span className={`status-badge ${d.status.toLowerCase()}`}>
-                    {d.status.charAt(0).toUpperCase() + d.status.slice(1)}
+                  <span className={`status-badge ${(d.status || 'pending').toLowerCase()}`}>
+                    {(d.status || 'pending').charAt(0).toUpperCase() + (d.status || 'pending').slice(1)}
                   </span>
                 </td>
-                <td>{d.assignedTo}</td>
+                <td>{d.assignedTo || ""}</td>
                 <td>
                   <input
                     placeholder="Assign volunteer"

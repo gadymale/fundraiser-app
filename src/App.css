@@ -1,19 +1,12 @@
-/* Body */
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
   background: linear-gradient(135deg, #e0f7fa, #f0f9ff);
   color: #333;
-  transition: background 0.5s ease;
 }
 
-/* Headings */
-h1, h2, h3 {
-  color: #222;
-  margin-bottom: 10px;
-}
+h1,h2,h3 { color: #222; }
 
-/* Buttons */
 button {
   cursor: pointer;
   border: none;
@@ -23,16 +16,12 @@ button {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
+button:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
 .btn-primary { background-color: #4CAF50; color: white; }
 .btn-secondary { background-color: #2196F3; color: white; }
 .btn-warning { background-color: #FF9800; color: white; }
 
-/* Inputs & Selects */
 input, select {
   padding: 8px;
   border-radius: 6px;
@@ -41,12 +30,8 @@ input, select {
   transition: box-shadow 0.3s ease;
 }
 
-input:focus, select:focus {
-  outline: none;
-  box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
-}
+input:focus, select:focus { outline: none; box-shadow: 0 0 8px rgba(33,150,243,0.5); }
 
-/* Fade-in animation */
 .fade-in {
   opacity: 0;
   transform: translateY(20px);
@@ -57,7 +42,6 @@ input:focus, select:focus {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Admin Table */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -85,7 +69,6 @@ input:focus, select:focus {
   transform: scale(1.02);
 }
 
-/* Volunteer Cards */
 .vol-card {
   border-radius: 8px;
   padding: 15px;
@@ -110,12 +93,10 @@ input:focus, select:focus {
 
 .vol-card button.contact { background: #FFC107; color: #333; }
 .vol-card button.donated { background: #FF5722; color: white; }
+
 .vol-card button:hover { transform: scale(1.1); }
 
-/* Status flash animation */
-.status-updated {
-  animation: flashStatus 0.6s ease;
-}
+.status-updated { animation: flashStatus 0.6s ease; }
 
 @keyframes flashStatus {
   0% { background-color: #ffff00; }

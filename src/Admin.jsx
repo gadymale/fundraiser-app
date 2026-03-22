@@ -6,7 +6,9 @@ import { collection, addDoc, updateDoc, doc, onSnapshot } from "firebase/firesto
 export default function Admin() {
   const [data, setData] = useState([]);
   const [donors, setDonors] = useState([]);
+  const [filters, setFilters] = useState({ name: "", city: "", state: "", assignedTo: "" });
 
+  // Fetch donors from Firebase
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "donors"), (snapshot) => {
       const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -15,6 +17,7 @@ export default function Admin() {
     return () => unsubscribe();
   }, []);
 
+  // Upload Excel file and parse
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -30,12 +33,15 @@ export default function Admin() {
     reader.readAsBinaryString(file);
   };
 
+  // Upload Excel data to Firebase
   const uploadToFirebase = async () => {
     for (const row of data) {
       const donor = {
         name: row["Name"] || "",
         phone: row["Primary Phone Number"] || "",
         email: row["Email"] || "",
+        primaryCity: row["Primary City"] || "",
+        primaryState: row["Primary State"] || "",
         previousDonation: row["FY 22-23"] || 0,
         likelihood: "medium",
         hasContact: !!row["Primary Phone Number"] || !!row["Email"],
@@ -47,57 +53,95 @@ export default function Admin() {
     alert("Donors uploaded to Firebase!");
   };
 
+  // Assign donor to volunteer
   const assignDonor = async (id, volunteer) => {
     await updateDoc(doc(db, "donors", id), { assignedTo: volunteer });
   };
 
+  // Filter donors
+  const filteredDonors = donors.filter((d) =>
+    d.name.toLowerCase().includes(filters.name.toLowerCase()) &&
+    d.primaryCity.toLowerCase().includes(filters.city.toLowerCase()) &&
+    d.primaryState.toLowerCase().includes(filters.state.toLowerCase()) &&
+    d.assignedTo.toLowerCase().includes(filters.assignedTo.toLowerCase())
+  );
+
   return (
     <div className="fade-in">
       <h2>Admin Dashboard</h2>
-      <input type="file" onChange={handleFileUpload} />
-      {data.length > 0 && (
-        <button className="btn-primary" onClick={uploadToFirebase}>Upload to Firebase</button>
-      )}
 
-      {data.length > 0 && (
+      {/* File Upload */}
+      <div style={{ marginBottom: 20 }}>
+        <input type="file" onChange={handleFileUpload} style={{ marginRight: 10 }} />
+        {data.length > 0 && (
+          <button className="btn-primary" onClick={uploadToFirebase}>
+            Upload to Firebase
+          </button>
+        )}
+      </div>
+
+      {/* Filters */}
+      <div style={{ marginBottom: 20 }}>
+        <input
+          className="filter-input"
+          placeholder="Filter by name"
+          value={filters.name}
+          onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+        />
+        <input
+          className="filter-input"
+          placeholder="Filter by city"
+          value={filters.city}
+          onChange={(e) => setFilters({ ...filters, city: e.target.value })}
+        />
+        <input
+          className="filter-input"
+          placeholder="Filter by state"
+          value={filters.state}
+          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+        />
+        <input
+          className="filter-input"
+          placeholder="Filter by volunteer"
+          value={filters.assignedTo}
+          onChange={(e) => setFilters({ ...filters, assignedTo: e.target.value })}
+        />
+      </div>
+
+      {/* Firebase Donors Table */}
+      <div className="table-container">
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Name</th><th>City</th><th>State</th><th>Phone</th><th>FY22-23</th><th>Assign</th>
+              <th>Name</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Phone</th>
+              <th>Status</th>
+              <th>Assigned To</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((row, idx) => (
-              <tr key={idx}>
-                <td>{row["Name"]}</td>
-                <td>{row["Primary City"]}</td>
-                <td>{row["Primary State"]}</td>
-                <td>{row["Primary Phone Number"]}</td>
-                <td>{row["FY 22-23"]}</td>
+            {filteredDonors.map((d) => (
+              <tr key={d.id}>
+                <td>{d.name}</td>
+                <td>{d.primaryCity}</td>
+                <td>{d.primaryState}</td>
+                <td>{d.phone}</td>
+                <td>{d.status}</td>
+                <td>{d.assignedTo}</td>
                 <td>
-                  <input placeholder="Volunteer" onBlur={(e) => assignDonor(row.id, e.target.value)} />
+                  <input
+                    placeholder="Assign volunteer"
+                    onBlur={(e) => assignDonor(d.id, e.target.value)}
+                  />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      )}
-
-      <h3>All Donors in Firebase</h3>
-      <table className="admin-table">
-        <thead>
-          <tr><th>Name</th><th>Assigned To</th><th>Status</th></tr>
-        </thead>
-        <tbody>
-          {donors.map((d, idx) => (
-            <tr key={d.id}>
-              <td>{d.name}</td>
-              <td>{d.assignedTo}</td>
-              <td>{d.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      </div>
     </div>
   );
 }

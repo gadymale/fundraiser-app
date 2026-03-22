@@ -1,66 +1,29 @@
-body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #e0f7fa, #f0f9ff);
-  color: #333;
+/* Table Container */
+.table-container {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  overflow-x: auto;
 }
 
-h1,h2,h3 { color: #222; }
-
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 14px;
-  font-weight: bold;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-button:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-
-.btn-primary { background-color: #4CAF50; color: white; }
-.btn-secondary { background-color: #2196F3; color: white; }
-.btn-warning { background-color: #FF9800; color: white; }
-
-input, select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  width: 100%;
-  transition: box-shadow 0.3s ease;
-}
-
-input:focus, select:focus { outline: none; box-shadow: 0 0 8px rgba(33,150,243,0.5); }
-
-.fade-in {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.5s forwards;
-}
-
-@keyframes fadeInUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* Table Header */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  border-radius: 8px;
-  overflow: hidden;
 }
 
 .admin-table th {
   padding: 12px;
   color: white;
   background: linear-gradient(90deg, #4CAF50, #2196F3);
+  font-weight: bold;
   text-align: left;
 }
 
 .admin-table td {
   padding: 10px;
-  background: #fff;
+  background: #f9f9f9;
   transition: transform 0.2s, background 0.3s;
 }
 
@@ -69,36 +32,16 @@ input:focus, select:focus { outline: none; box-shadow: 0 0 8px rgba(33,150,243,0
   transform: scale(1.02);
 }
 
-.vol-card {
-  border-radius: 8px;
-  padding: 15px;
-  background: linear-gradient(135deg, #2196F3, #4CAF50);
-  color: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.vol-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-}
-
-.vol-card button {
-  margin-top: 8px;
+/* Filter Inputs */
+.filter-input {
+  padding: 6px 10px;
+  margin-right: 10px;
   border-radius: 6px;
-  padding: 6px 12px;
-  font-weight: bold;
-  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #ccc;
+  transition: box-shadow 0.3s;
 }
 
-.vol-card button.contact { background: #FFC107; color: #333; }
-.vol-card button.donated { background: #FF5722; color: white; }
-
-.vol-card button:hover { transform: scale(1.1); }
-
-.status-updated { animation: flashStatus 0.6s ease; }
-
-@keyframes flashStatus {
-  0% { background-color: #ffff00; }
-  100% { background-color: transparent; }
+.filter-input:focus {
+  outline: none;
+  box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
 }
